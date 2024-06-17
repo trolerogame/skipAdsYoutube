@@ -28,7 +28,6 @@
     left: 6px;
     bottom: 4px;
     background-color: white;
-    transition: .3s;
     border-radius: 50%;
 }
 input:checked + .slider {
