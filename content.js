@@ -45,7 +45,7 @@ const observeVideoAd = new MutationObserver(callbackObserve)
 // remove button
 
 const addIntervalRemoveButtonRemote = () => {
-    intervalRemoveButtonRemote = setInverval(() => {
+    intervalRemoveButtonRemote = setInterval(() => {
         if($('.ytp-remote-button')){
             $('.ytp-remote-button').style.display = 'none'
         }
