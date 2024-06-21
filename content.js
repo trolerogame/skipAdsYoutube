@@ -1,5 +1,6 @@
 let intervalSkipAd = null
 let intervalVideoAd = null
+let intervalRemoveButtonRemote = null
 let isRemoteButton = false
 const config = { attributes: true, childList: true, subtree: true };
 
@@ -13,15 +14,6 @@ const skipAds = () => {
     $(".ytp-skip-ad-button") && $(".ytp-skip-ad-button").click()
 }
 
-const removeButtonRemote = (remove = true) => {
-    isRemoteButton = remove
-    if($('.ytp-remote-button')){
-        setTimeout(() => {
-            $('.ytp-remote-button').style.display = remove ? 'none' : 'inline-block'
-        }, 1000)
-    }
-
-}
 
 const destroyInterval = () => {
     clearInterval(intervalSkipAd)
@@ -30,16 +22,15 @@ const destroyInterval = () => {
     intervalVideoAd = null
 }
 
-const addObserve = (removeButton) => {
+const addObserve = () => {
     observeVideoAd.observe($('.video-ads'), config)
     destroyInterval()
-    removeButton && removeButtonRemote()
 }
 
-const addInterval = (removeButton) => {
+const addInterval = () => {
     intervalSkipAd = setInterval(skipAds, 100)
     intervalVideoAd = setInterval(() => {
-        $('.video-ads') && addObserve(removeButton)
+        $('.video-ads') && addObserve()
     }, 100)
 }
 
@@ -51,6 +42,20 @@ const callbackObserve = () => {
 const observeVideoAd = new MutationObserver(callbackObserve)
 
 
+// remove button
+
+const addIntervalRemoveButtonRemote = () => {
+    intervalRemoveButtonRemote = setInverval(() => {
+        if($('.ytp-remote-button')){
+            $('.ytp-remote-button').style.display = remove ? 'none' : 'inline-block'
+        }
+    }, 1000)
+}
+const destroyIntervalRemoveButtonRemote = () => {
+    clearInterval(intervalRemoveButtonRemote)
+    intervalRemoveButtonRemote = null
+}
+
 
 
 chrome.storage.local.get(['skipAdEnabled', 'removeButtonRemote'], function(result) {
@@ -58,12 +63,13 @@ chrome.storage.local.get(['skipAdEnabled', 'removeButtonRemote'], function(resul
     observeVideoAd.disconnect()
     console.log('start')
     const isChecked = result.skipAdEnabled || false
+    const isCheckedRemote = result.removeButtonRemote || false
     if(isChecked && intervalSkipAd == null){
-        console.log('active') 
-        addInterval(result.removeButtonRemote) 
+        console.log('active skip ad') 
+        addInterval() 
     }
-    if(result.removeButtonRemote){
-        removeButtonRemote()
+    if(isCheckedRemote && intervalRemoveButtonRemote == null){
+        addIntervalRemoveButtonRemote()
     }
 });
 
@@ -72,10 +78,10 @@ chrome.storage.onChanged.addListener(function(changes, areaName) {
     if (areaName === 'local' && 'skipAdEnabled' && 'removeButtonRemote' in changes) {
         if(changes.skipAdEnabled){
             if(changes.skipAdEnabled.newValue){
-                console.log('active')
+                console.log('active skip ad') 
                 addInterval()
             }else{
-                console.log('inactive')
+                console.log('inactive skip ad') 
                 removeButtonRemote(false)
                 destroyInterval()
                 observeVideoAd.disconnect()
@@ -83,9 +89,9 @@ chrome.storage.onChanged.addListener(function(changes, areaName) {
         }
         if(changes.removeButtonRemote){
             if(changes.removeButtonRemote.newValue){
-                removeButtonRemote()
+                addIntervalRemoveButtonRemote()
             }else{
-                removeButtonRemote(false)
+                destroyIntervalRemoveButtonRemote()
             }
         }
     }
