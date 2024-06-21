@@ -1,3 +1,11 @@
+.content_toggle{
+    margin: 5px 0;
+}
+
+.title_button{
+    margin-bottom: 3px;
+}
+
 .switch {
     position: relative;
     display: inline-block;
