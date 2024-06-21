@@ -54,6 +54,9 @@ const addIntervalRemoveButtonRemote = () => {
 const destroyIntervalRemoveButtonRemote = () => {
     clearInterval(intervalRemoveButtonRemote)
     intervalRemoveButtonRemote = null
+    if($('.ytp-remote-button')){
+        $('.ytp-remote-button').style.display = 'inline-block'
+    }
 }
 
 
@@ -69,6 +72,7 @@ chrome.storage.local.get(['skipAdEnabled', 'removeButtonRemote'], function(resul
         addInterval() 
     }
     if(isCheckedRemote && intervalRemoveButtonRemote == null){
+        console.log('active remove button remote') 
         addIntervalRemoveButtonRemote()
     }
 });
@@ -89,12 +93,12 @@ chrome.storage.onChanged.addListener(function(changes, areaName) {
         }
         if(changes.removeButtonRemote){
             if(changes.removeButtonRemote.newValue){
+                console.log('active remove button remote') 
                 addIntervalRemoveButtonRemote()
             }else{
+                console.log('inactive remove button remote') 
                 destroyIntervalRemoveButtonRemote()
-                if($('.ytp-remote-button')){
-                    $('.ytp-remote-button').style.display = 'inline-block'
-                }
+
             }
         }
     }
