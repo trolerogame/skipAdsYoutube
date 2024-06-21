@@ -47,7 +47,7 @@ const observeVideoAd = new MutationObserver(callbackObserve)
 const addIntervalRemoveButtonRemote = () => {
     intervalRemoveButtonRemote = setInverval(() => {
         if($('.ytp-remote-button')){
-            $('.ytp-remote-button').style.display = remove ? 'none' : 'inline-block'
+            $('.ytp-remote-button').style.display = 'none'
         }
     }, 1000)
 }
@@ -92,6 +92,9 @@ chrome.storage.onChanged.addListener(function(changes, areaName) {
                 addIntervalRemoveButtonRemote()
             }else{
                 destroyIntervalRemoveButtonRemote()
+                if($('.ytp-remote-button')){
+                    $('.ytp-remote-button').style.display = 'inline-block'
+                }
             }
         }
     }
